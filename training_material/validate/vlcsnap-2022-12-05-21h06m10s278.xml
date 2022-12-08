@@ -1,0 +1,25 @@
+<annotation>
+	<folder>katzenklappe</folder>
+	<filename>vlcsnap-2022-12-05-21h06m10s278.jpg</filename>
+	<path>/katzenklappe/vlcsnap-2022-12-05-21h06m10s278.jpg</path>
+	<source>
+		<database>Unspecified</database>
+	</source>
+	<size>
+		<width>720</width>
+		<height>480</height>
+		<depth>3</depth>
+	</size>
+	<object>
+		<name>Snout</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>516</xmin>
+			<ymin>17</ymin>
+			<xmax>638</xmax>
+			<ymax>155</ymax>
+		</bndbox>
+	</object>
+</annotation>
