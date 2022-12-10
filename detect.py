@@ -5,7 +5,7 @@ import time
 from gpiozero import MotionSensor
 
 # config
-min_conf_threshold = 0.3
+min_conf_threshold = 0.5
 
 #init cam and infrared motion sensor connected over gpio
 cam = cv2.VideoCapture(0)
@@ -40,6 +40,9 @@ while True:
 
     for i in range(len(scores)):
       if ((scores[i] > min_conf_threshold) and (scores[i] <= 1.0)):
+        # save original image
+        image_filename = 'img_%s.jpg' % int(round(time.time() * 1000))
+        cv2.imwrite('/home/pi/images/original/' + image_filename, image)
 
         # Get bounding box coordinates and draw box
         ymin = int(max(1,(boxes[i][0] * imH)))
@@ -55,8 +58,7 @@ while True:
         cv2.rectangle(image, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED)
         cv2.putText(image, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
 
-        # save image
-        image_path = '/home/pi/images/img_%s.jpg' % int(round(time.time() * 1000))
-        cv2.imwrite(image_path, image)
+        # save image with bounding box
+        cv2.imwrite('/home/pi/images/detected/' + image_filename, image)
 
 cam.release()
