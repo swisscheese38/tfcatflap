@@ -14,6 +14,12 @@ pir = MotionSensor(4)
 lockMotor = rpi_dc_lib.TB6612FNGDc(5, 6, 13)
 rpi_dc_lib.TB6612FNGDc.standby(12, True)
 
+# initially lock the flap
+lockMotor.forward(100)
+time.sleep(0.5)
+lockMotor.stop()
+locked = True
+
 # init tensorflow
 interpreter = Interpreter(model_path='model.tflite')
 interpreter.allocate_tensors()

@@ -1,11 +1,15 @@
 [Unit]
 Description=Detect cat snouts in webcam on IR motion
 After=multi-user.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
 
 [Service]
 ExecStart=/home/pi/tfcatflap/venv/bin/python /home/pi/tfcatflap/detect.py
 WorkingDirectory=/home/pi/tfcatflap
 User=pi
+RestartSec=10
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
