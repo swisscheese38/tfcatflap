@@ -3,13 +3,16 @@ import numpy as np
 import cv2
 import time
 from gpiozero import MotionSensor
+from RpiMotorLib import rpi_dc_lib
 
 # config
 min_conf_threshold = 0.5
 
-#init cam and infrared motion sensor connected over gpio
+#init cam, infrared motion sensor and lock motor
 cam = cv2.VideoCapture(0)
 pir = MotionSensor(4)
+lockMotor = rpi_dc_lib.TB6612FNGDc(5, 6, 13)
+rpi_dc_lib.TB6612FNGDc.standby(12, True)
 
 # init tensorflow
 interpreter = Interpreter(model_path='model.tflite')
@@ -22,6 +25,7 @@ width = input_details[0]['shape'][2]
 while True:
   pir.wait_for_motion()
   while pir.motion_detected:
+    print('Motion detected')
 
     # get image from webcam and preprocess
     ret, image = cam.read()
@@ -60,5 +64,21 @@ while True:
 
         # save image with bounding box
         cv2.imwrite('/home/pi/images/detected/' + image_filename, image)
+
+        # unlock the flap
+        print('flap unlocked')
+        lockMotor.backward(100)
+        time.sleep(0.5)
+        lockMotor.stop()
+        locked = False
+
+  if locked == False:
+    # wait 10 seconds then lock the flap again
+    time.sleep(10)
+    print('Flap locked again')
+    lockMotor.forward(100)
+    time.sleep(0.5)
+    lockMotor.stop()
+    locked = True
 
 cam.release()

@@ -2,3 +2,4 @@ tflite-runtime
 opencv-python
 gpiozero
 RPi.GPIO
+rpimotorlib
