@@ -49,16 +49,23 @@ while True:
     boxes = interpreter.get_tensor(output_details[1]['index'])[0]
 
     for i in range(len(scores)):
-      if ((scores[i] > min_conf_threshold) and (scores[i] <= 1.0)):
+
+      # Get bounding box coordinates
+      ymin = int(max(1,(boxes[i][0] * imH)))
+      xmin = int(max(1,(boxes[i][1] * imW)))
+      ymax = int(min(imH,(boxes[i][2] * imH)))
+      xmax = int(min(imW,(boxes[i][3] * imW)))
+      relSize = ((xmax-xmin)*(ymax-ymin))/(imH*imW)
+      #print("bbox size: " + str((xmax-xmin)*(ymax-ymin)))
+      #print("im size: " + str(imH*imW))
+      #print("relSize: " + str(relSize))
+
+      if ((scores[i] > min_conf_threshold) and (scores[i] <= 1.0) and relSize <= 0.75):
         # save original image
         image_filename = 'img_%s.jpg' % int(round(time.time() * 1000))
         cv2.imwrite('/home/pi/images/original/' + image_filename, image)
 
-        # Get bounding box coordinates and draw box
-        ymin = int(max(1,(boxes[i][0] * imH)))
-        xmin = int(max(1,(boxes[i][1] * imW)))
-        ymax = int(min(imH,(boxes[i][2] * imH)))
-        xmax = int(min(imW,(boxes[i][3] * imW)))
+        # Draw bounding box
         cv2.rectangle(image, (xmin,ymin), (xmax,ymax), (10, 255, 0), 2)
 
         # Draw label
