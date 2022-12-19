@@ -7,6 +7,8 @@ from RpiMotorLib import rpi_dc_lib
 
 # config
 min_conf_threshold = 0.5
+max_rel_bbox_size = 0.75
+min_unlock_seconds = 60
 
 #init cam, infrared motion sensor and lock motor
 cam = cv2.VideoCapture(0)
@@ -30,8 +32,11 @@ width = input_details[0]['shape'][2]
 
 while True:
   pir.wait_for_motion()
-  while pir.motion_detected:
-    print('Motion detected')
+  while pir.motion_detected or last_motion + min_unlock_seconds > time.time():
+
+    if pir.motion_detected:
+      print('Motion detected')
+      last_motion = time.time()
 
     # get image from webcam and preprocess
     ret, image = cam.read()
@@ -55,12 +60,10 @@ while True:
       xmin = int(max(1,(boxes[i][1] * imW)))
       ymax = int(min(imH,(boxes[i][2] * imH)))
       xmax = int(min(imW,(boxes[i][3] * imW)))
-      relSize = ((xmax-xmin)*(ymax-ymin))/(imH*imW)
-      #print("bbox size: " + str((xmax-xmin)*(ymax-ymin)))
-      #print("im size: " + str(imH*imW))
-      #print("relSize: " + str(relSize))
+      rel_size = ((xmax-xmin)*(ymax-ymin))/(imH*imW)
 
-      if ((scores[i] > min_conf_threshold) and (scores[i] <= 1.0) and relSize <= 0.75):
+      if ((scores[i] > min_conf_threshold) and (scores[i] <= 1.0) and rel_size <= max_rel_bbox_size):
+
         # save original image
         image_filename = 'img_%s.jpg' % int(round(time.time() * 1000))
         cv2.imwrite('/home/pi/images/original/' + image_filename, image)
@@ -79,15 +82,13 @@ while True:
         cv2.imwrite('/home/pi/images/detected/' + image_filename, image)
 
         # unlock the flap
-        print('flap unlocked')
+        print('Flap unlocked')
         lockMotor.backward(100)
         time.sleep(0.5)
         lockMotor.stop()
         locked = False
 
   if locked == False:
-    # wait 10 seconds then lock the flap again
-    time.sleep(10)
     print('Flap locked again')
     lockMotor.forward(100)
     time.sleep(0.5)
