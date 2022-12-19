@@ -5,6 +5,20 @@ import time
 from gpiozero import MotionSensor
 from RpiMotorLib import rpi_dc_lib
 
+def lock_flap():
+  print('Flap locked')
+  lockMotor.forward(100)
+  time.sleep(0.5)
+  lockMotor.stop()
+  locked = True
+
+def unlock_flap():
+  print('Flap unlocked')
+  lockMotor.backward(100)
+  time.sleep(0.5)
+  lockMotor.stop()
+  locked = False
+
 # config
 min_conf_threshold = 0.5
 max_rel_bbox_size = 0.75
@@ -17,10 +31,7 @@ lockMotor = rpi_dc_lib.TB6612FNGDc(5, 6, 13)
 rpi_dc_lib.TB6612FNGDc.standby(12, True)
 
 # initially lock the flap
-lockMotor.forward(100)
-time.sleep(0.5)
-lockMotor.stop()
-locked = True
+lock_flap()
 
 # init tensorflow
 interpreter = Interpreter(model_path='model.tflite')
@@ -32,6 +43,7 @@ width = input_details[0]['shape'][2]
 
 while True:
   pir.wait_for_motion()
+
   while pir.motion_detected or last_motion + min_unlock_seconds > time.time():
 
     if pir.motion_detected:
@@ -64,6 +76,9 @@ while True:
 
       if ((scores[i] > min_conf_threshold) and (scores[i] <= 1.0) and rel_size <= max_rel_bbox_size):
 
+        # unlock the flap
+        unlock_flap()
+
         # save original image
         image_filename = 'img_%s.jpg' % int(round(time.time() * 1000))
         cv2.imwrite('/home/pi/images/original/' + image_filename, image)
@@ -81,18 +96,7 @@ while True:
         # save image with bounding box
         cv2.imwrite('/home/pi/images/detected/' + image_filename, image)
 
-        # unlock the flap
-        print('Flap unlocked')
-        lockMotor.backward(100)
-        time.sleep(0.5)
-        lockMotor.stop()
-        locked = False
-
   if locked == False:
-    print('Flap locked again')
-    lockMotor.forward(100)
-    time.sleep(0.5)
-    lockMotor.stop()
-    locked = True
+    lock_flap()
 
 cam.release()
