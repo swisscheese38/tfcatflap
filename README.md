@@ -1,9 +1,7 @@
 # tfcatflap
 Work in progress
 ## Training the model
-Checkout the Jupyter notebook (using Colab) I used to create the model: [training_material/train.ipynb](training_material/train.ipynb)
-## Play around with the model
-There's a different Jupyter notebook that you can use to try out different sources of data (images, videos) for the model to detect objects in: [training_material/tryoutmodel.ipynb](training_material/tryoutmodel.ipynb)
+Checkout the repository `https://github.com/swisscheese38/tfcatflap-training` to see how the custom model has been trained.
 ## Install on a Raspberry Pi Zero 2 W
 Clone the respsitory into your home directory:
 ```
