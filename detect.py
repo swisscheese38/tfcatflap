@@ -8,14 +8,14 @@ from RpiMotorLib import rpi_dc_lib
 def lock_flap():
   print('Flap locked')
   lockMotor.forward(100)
-  time.sleep(0.5)
+  time.sleep(0.2)
   lockMotor.stop()
   locked = True
 
 def unlock_flap():
   print('Flap unlocked')
   lockMotor.backward(100)
-  time.sleep(0.5)
+  time.sleep(0.2)
   lockMotor.stop()
   locked = False
 
@@ -32,6 +32,7 @@ rpi_dc_lib.TB6612FNGDc.standby(12, True)
 
 # initially lock the flap
 lock_flap()
+locked = True
 
 # init tensorflow
 interpreter = Interpreter(model_path='model.tflite')
@@ -77,7 +78,8 @@ while True:
       if ((scores[i] > min_conf_threshold) and (scores[i] <= 1.0) and rel_size <= max_rel_bbox_size):
 
         # unlock the flap
-        unlock_flap()
+        if locked == True:
+          unlock_flap()
 
         # save original image
         image_filename = 'img_%s.jpg' % int(round(time.time() * 1000))
