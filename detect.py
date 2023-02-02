@@ -10,14 +10,12 @@ def lock_flap():
   lockMotor.forward(100)
   time.sleep(0.2)
   lockMotor.stop()
-  locked = True
 
 def unlock_flap():
   print('Flap unlocked')
   lockMotor.backward(100)
   time.sleep(0.2)
   lockMotor.stop()
-  locked = False
 
 # config
 min_conf_threshold = 0.5
@@ -80,6 +78,7 @@ while True:
         # unlock the flap
         if locked == True:
           unlock_flap()
+          locked = False
 
         # save original image
         image_filename = 'img_%s.jpg' % int(round(time.time() * 1000))
@@ -100,5 +99,6 @@ while True:
 
   if locked == False:
     lock_flap()
+    locked = True
 
 cam.release()
