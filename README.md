@@ -1,13 +1,27 @@
 # tfcatflap
 Work in progress
+
+## Hardware
+
+* SureFlap Microchip Pet Door
+* Raspberry Pi Zero 2 W
+* MH-SR602 Mini Motion Sensor
+* TB6612 Motor Driver
+* Night Vision Wide Angle Fisheye 5MP Raspi Cam
+* Infrared IR LED Light
+* Some cables
+
 ## Training the model
 Look at the repository [tfcatflap-training](https://github.com/swisscheese38/tfcatflap-training) to see how the custom model has been trained.
-## Install on a Raspberry Pi Zero 2 W
+
+## Install the software
 Setup the Pi with Raspbian (preferably the Lite version in 32 bit) and then install all necessary packages:
 ```
 sudo apt-get update 
 sudo apt-get install git pip virtualenv
 ```
+You have to enable legacy camera support, as it is disabled by default. To do so, type `sudo raspi-config` in a terminal and then choose `Interface Options` and enable `Legacy Camera` and then reboot.
+
 Then clone the respsitory into your home directory:
 ```
 cd
@@ -40,6 +54,7 @@ sudo cp tfcatflap.service /lib/systemd/system/.
 sudo systemctl start tfcatflap.service
 sudo systemctl enable tfcatflap.service
 ```
+
 ## Errors you might encounter
 When running on raspbian you might get any of the following errors:
 ```
@@ -52,5 +67,10 @@ libgtk-3.so.0: cannot open shared object file: No such file or directory
 ```
 in that case you need install the following packages:
 ```
-sudo apt-get install libatlas-base-dev libopenjp2-7 libavcodec-dev libavformat-dev libswscale-dev libgtk-3-dev
+sudo apt-get install libatlas-base-dev
+sudo apt-get install libopenjp2-7
+sudo apt-get install libavcodec-dev
+sudo apt-get install libavformat-dev
+sudo apt-get install libswscale-dev
+sudo apt-get install libgtk-3-dev
 ```
