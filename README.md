@@ -27,32 +27,35 @@ Then clone the respsitory into your home directory:
 cd
 git clone https://github.com/swisscheese38/tfcatflap.git
 ```
+
 Create a new virtual environment:
 ```
 cd tfcatflap/
 virtualenv venv
 source venv/bin/activate
 ```
+
 Once you have sourced the new virtual environment `venv` you should install the required dependencies inside of it:
 ```
 pip install -r requirements.txt
 ```
-Create the directories where the images will be stored inside so they can be used for further training the model:
-```
-mkdir /home/pi/images/
-mkdir /home/pi/images/original/
-mkdir /home/pi/images/detected/
-```
-Verify that the script is working by executing it:
-```
-python detect.py
-```
-If there's no errors, you should see images getting created under `/home/pi/images/` if cat snouts have been detected. Afterwards you can deactivate out of your virtual environment and install the script as a systemd service:
+
+Afterwards you can deactivate out of your virtual environment and change the URL in `tfcatflap.service` to your Home Assistant's Push Camera Webhook URL:
 ```
 deactivate
+vi tfcatflap.service
+```
+
+Install the script as a systemd service and start it (it will now automatically be started on each boot):
+```
 sudo cp tfcatflap.service /lib/systemd/system/.
 sudo systemctl start tfcatflap.service
 sudo systemctl enable tfcatflap.service
+```
+
+Verify that the script is working by checking it's log output:
+```
+journalctl -u tfcatflap.service
 ```
 
 ## Errors you might encounter
