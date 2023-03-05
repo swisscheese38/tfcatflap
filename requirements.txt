@@ -3,4 +3,4 @@ opencv-python
 gpiozero
 RPi.GPIO
 rpimotorlib
-requests
+paho-mqtt

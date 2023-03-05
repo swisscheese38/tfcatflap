@@ -4,7 +4,7 @@ import cv2
 import time
 from gpiozero import MotionSensor
 from RpiMotorLib import rpi_dc_lib
-import requests
+import paho.mqtt.publish as publish
 import sys
 
 def lock_flap():
@@ -22,10 +22,14 @@ def unlock_flap():
 # config
 min_conf_threshold = 0.5
 max_rel_bbox_size = 0.75
-min_unlock_seconds = 60
-webhook_url = sys.argv[1]
+min_unlock_seconds = 10
+mqtt_hostname = sys.argv[1]
+mqtt_username = sys.argv[2]
+mqtt_password = sys.argv[3]
 
-print('Using webhook URL ' + webhook_url)
+print('Using MQTT Hostname ' + mqtt_hostname)
+print('Using MQTT Username ' + mqtt_username)
+print('Using MQTT Password ' + mqtt_password)
 
 #init cam, infrared motion sensor and lock motor
 cam = cv2.VideoCapture(0)
@@ -103,7 +107,7 @@ try:
         cv2.putText(image, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
 
         # Push image to Home Assistant
-        requests.post(webhook_url, files={'image': cv2.imencode('.jpg', image)[1]})
+        publish.single(topic="katzenklappencam_topic", payload=bytearray(cv2.imencode('.jpg', image)[1]), hostname=mqtt_hostname, auth={"username":mqtt_username, "password":mqtt_password}) 
 
     # lock again after minimum unlock time is over
     if locked == False:
